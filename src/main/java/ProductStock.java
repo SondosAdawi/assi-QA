@@ -2,21 +2,13 @@
 public class ProductStock {
 
     private final String productId;
-    private String location;       // e.g., "WH-1-A3"
-    private int onHand;            // physical units stored
-    private int reserved;          // units reserved for orders
-    private int reorderThreshold;  // when available < threshold → reorder needed
-    private int maxCapacity;       // max units this location can store
+    private String location;
+    private int onHand;
+    private int reserved;
+    private int reorderThreshold;
+    private int maxCapacity;
 
-    /**
-     * Creates a ProductStock instance with basic inventory info.
-     *
-     * @param productId        unique ID of the product (must not be null/blank)
-     * @param location         storage location code (must not be null/blank)
-     * @param initialOnHand    initial on-hand quantity (>= 0)
-     * @param reorderThreshold threshold for triggering reorder (>= 0)
-     * @param maxCapacity      maximum capacity of this location (> 0)
-     */
+
     public ProductStock(String productId,
                         String location,
                         int initialOnHand,
@@ -50,7 +42,6 @@ public class ProductStock {
         this.maxCapacity = maxCapacity;
     }
 
-    // ---------- Getters ----------
 
     public String getProductId() {
         return productId;
@@ -68,9 +59,7 @@ public class ProductStock {
         return reserved;
     }
 
-    /**
-     * Available stock = onHand - reserved.
-     */
+
     public int getAvailable() {
         return onHand - reserved;
     }
@@ -83,11 +72,7 @@ public class ProductStock {
         return maxCapacity;
     }
 
-    // ---------- Mutating operations with business rules ----------
 
-    /**
-     * Change physical location of the stock.
-     */
     public void changeLocation(String newLocation) {
         if (newLocation == null || newLocation.isBlank()) {
             throw new IllegalArgumentException("newLocation must not be null or blank");
@@ -95,10 +80,7 @@ public class ProductStock {
         this.location = newLocation;
     }
 
-    /**
-     * Adds stock to on-hand quantity. Fails if amount is not positive
-     * or if the operation would exceed maxCapacity.
-     */
+
     public void addStock(int amount) {
         if (amount <= 0) {
             throw new IllegalArgumentException("Amount to add must be positive");
@@ -109,10 +91,7 @@ public class ProductStock {
         onHand += amount;
     }
 
-    /**
-     * Removes stock from on-hand as damaged/expired.
-     * Cannot remove more than onHand.
-     */
+
     public void removeDamaged(int amount) {
         if (amount <= 0) {
             throw new IllegalArgumentException("Amount to remove must be positive");
@@ -128,10 +107,7 @@ public class ProductStock {
         }
     }
 
-    /**
-     * Reserves stock for a customer order.
-     * Cannot reserve more than available.
-     */
+
     public void reserve(int amount) {
         if (amount <= 0) {
             throw new IllegalArgumentException("Amount to reserve must be positive");
@@ -142,10 +118,8 @@ public class ProductStock {
         reserved += amount;
     }
 
-    /**
-     * Releases (un-reserves) previously reserved stock.
-     * Cannot release more than currently reserved.
-     */
+
+
     public void releaseReservation(int amount) {
         if (amount <= 0) {
             throw new IllegalArgumentException("Amount to release must be positive");
@@ -156,10 +130,7 @@ public class ProductStock {
         reserved -= amount;
     }
 
-    /**
-     * Confirms shipment: removes stock from on-hand and reserved at the same time.
-     * This assumes the amount was previously reserved.
-     */
+
     public void shipReserved(int amount) {
         if (amount <= 0) {
             throw new IllegalArgumentException("Amount to ship must be positive");
@@ -177,16 +148,11 @@ public class ProductStock {
         onHand -= amount;
     }
 
-    /**
-     * Returns true if available stock is below reorder threshold.
-     */
     public boolean isReorderNeeded() {
         return getAvailable() < reorderThreshold;
     }
 
-    /**
-     * Updates the reorder threshold, must be >= 0 and <= maxCapacity.
-     */
+
     public void updateReorderThreshold(int newThreshold) {
         if (newThreshold < 0) {
             throw new IllegalArgumentException("reorderThreshold must be >= 0");
@@ -197,9 +163,7 @@ public class ProductStock {
         this.reorderThreshold = newThreshold;
     }
 
-    /**
-     * Updates max capacity. Cannot be less than current onHand.
-     */
+
     public void updateMaxCapacity(int newMaxCapacity) {
         if (newMaxCapacity <= 0) {
             throw new IllegalArgumentException("maxCapacity must be > 0");
